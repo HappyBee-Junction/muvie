@@ -1,4 +1,4 @@
-from pandas import read_csv
+import pandas as pd
 import json
 from senticnet.senticnet import Senticnet
 import re
@@ -28,8 +28,10 @@ def processMovieData(dic):
         STOPWORDS = json.load(json_data)
     sn = Senticnet()
     output = []
-    filedata = read_csv('tmdb_5000_movies.csv',skiprows=[1])
-    for line in filedata.values:
+    filedata = pd.read_csv('tmdb_5000_movies.csv',skiprows=[1])
+    for index,line in enumerate(filedata.values):
+        if index == 4455:
+            print("stop")
         data = []
         data.append(line[2]) #append id
         overview = re.findall(r"[\w']+", line[1])
@@ -62,10 +64,12 @@ def processMovieData(dic):
         orderedEmoList = []
         for key in dic.keys():
             orderedEmoList.append(int(dic[key]))
-        normEmoList = orderedEmoList / np.linalg.norm(orderedEmoList)
+        if np.linalg.norm(orderedEmoList) != 0.0:
+            normEmoList = orderedEmoList / np.linalg.norm(orderedEmoList)
         
         data.append(normEmoList) #append keywords normalized L2 values
-        output.append(data)
+        output.append(pd.Series(data).to_json(orient='values'))
+        
     with open('./movie_raw.txt', 'w') as outfile:
         json.dump(output, outfile)
 
