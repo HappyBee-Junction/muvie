@@ -12,17 +12,6 @@ import collections
 array = ['id','genres', 'keywords','overview', 'release_date', 'runtime', 'tagline', 'title', 'vote_average']
 alphDict = {'admiration': 0, 'anger': 0, 'disgust': 0, 'fear': 0, 'interest': 0 , 'joy': 0, 'sadness': 0, 'surprise': 0}
 
-#def getCount(tuple):
-#    return int(tuple[1])
-
-def normalized(arr):
-    sum = 0.0
-    for item in arr:
-        sum += item
-    for item in arr:
-        item = item/sum
-    return arr
-
 def processMovieData(dic):
     with open('./stopwords.txt') as json_data:
         STOPWORDS = json.load(json_data)
@@ -50,8 +39,6 @@ def processMovieData(dic):
                     emotion = sn.moodtags(word)
                     for emo in emotion:
                         keywords_emotions.append(emo.replace("#",""))
-        #dic_copy = dic.copy()
-        #sortedList = sorted(stats.itemfreq(overview_emotions + keywords_emotions), key=getCount)
 
         #Retrieve ordered dictionnary of emotions with their frequencies: dic 
         emoList = stats.itemfreq(overview_emotions + keywords_emotions)
@@ -66,7 +53,7 @@ def processMovieData(dic):
             orderedEmoList.append(int(dic[key]))
         if np.linalg.norm(orderedEmoList) != 0.0:
             normEmoList = orderedEmoList / np.linalg.norm(orderedEmoList)
-        
+
         data.append(normEmoList) #append keywords normalized L2 values
         output.append(pd.Series(data).to_json(orient='values'))
         
