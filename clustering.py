@@ -7,19 +7,20 @@ import numpy as np
 import requests
 import build
 import senticnet4
+import collections
 
 array = ['id','genres', 'keywords','overview', 'release_date', 'runtime', 'tagline', 'title', 'vote_average']
 alphDict = {'admiration': 0, 'anger': 0, 'disgust': 0, 'fear': 0, 'interest': 0 , 'joy': 0, 'sadness': 0, 'surprise': 0}
 
-def getCount(tuple):
-    return int(tuple[1])
+#def getCount(tuple):
+#    return int(tuple[1])
 
 def normalized(arr):
     sum = 0.0
     for item in arr:
-        sum += int(item[1])
+        sum += item
     for item in arr:
-        item[1] = int(item[1])/sum
+        item = item/sum
     return arr
 
 def processMovieData(dic):
@@ -43,13 +44,27 @@ def processMovieData(dic):
         for obj in jsonobj:
             keyword = re.findall(r"[\w']+", obj['name'].replace("'"," ")) 
             for word in keyword:
-                if word not in STOPWORDS and word in dic:
+                if word not in STOPWORDS and word in senticnet4.senticnet:
                     emotion = sn.moodtags(word)
                     for emo in emotion:
                         keywords_emotions.append(emo.replace("#",""))
-        dic_copy = dic.copy()
-        sortedList = sorted(stats.itemfreq(overview_emotions + keywords_emotions), key=getCount)
-        data.append(normalized(sortedList[::-1][:5])) #append keywords
+        #dic_copy = dic.copy()
+        #sortedList = sorted(stats.itemfreq(overview_emotions + keywords_emotions), key=getCount)
+
+        #Retrieve ordered dictionnary of emotions with their frequencies: dic 
+        emoList = stats.itemfreq(overview_emotions + keywords_emotions)
+        emoDict = alphDict.copy()
+        for elt in emoList:
+            emoDict[elt[0]] = elt[1]
+        dic = collections.OrderedDict(sorted(emoDict.items()))
+
+        #Compute list of frequencies out of dictionnary
+        orderedEmoList = []
+        for key in dic.keys():
+            orderedEmoList.append(int(dic[key]))
+        normEmoList = orderedEmoList / np.linalg.norm(orderedEmoList)
+        
+        data.append(normEmoList) #append keywords normalized L2 values
         output.append(data)
     with open('./movie_raw.txt', 'w') as outfile:
         json.dump(output, outfile)
