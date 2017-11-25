@@ -18,9 +18,7 @@ def processMovieData(dic):
     sn = Senticnet()
     output = []
     filedata = pd.read_csv('tmdb_5000_movies.csv',skiprows=[1])
-    for index,line in enumerate(filedata.values):
-        if index == 4455:
-            print("stop")
+    for index, line in enumerate(filedata.values):
         data = []
         data.append(line[2]) #append id
         overview = re.findall(r"[\w']+", line[1])
