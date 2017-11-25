@@ -4,6 +4,7 @@ import json
 from sqlalchemy.orm import relationship
 import random, requests, re
 from kmeans import kmeans
+import azlyrics
 
 db = SQLAlchemy()
 
@@ -34,18 +35,18 @@ def magic(tracklist):
 	return muvies
 
 def getLyrics(trackname, artist):
-	values={'q_track': trackname,'q_artist':artist, 'apikey':'a861047a0eb1272708e4d518bee92a6d'}
-
-	response = requests.get('http://api.musixmatch.com/ws/1.1/matcher.lyrics.get', params=values)
-
-	if response.json()['message']['header']['status_code'] is not 200:
-		return ''
-	r=response.json()['message']['body']['lyrics']['lyrics_body']
-
-	regex= re.compile('[^a-zA-Z]')
-	r = regex.sub(' ', r[0:len(r)-74])
-	return (r)
-
+	az = azlyrics.Azlyrics(artist, trackname)
+	az.artist = artist
+	az.music = trackname
+	# values={'q_track': trackname,'q_artist':artist, 'apikey':'a861047a0eb1272708e4d518bee92a6d'}
+	# response = requests.get('http://api.musixmatch.com/ws/1.1/matcher.lyrics.get', params=values)
+	# if response.json()['message']['header']['status_code'] is not 200:
+	# 	return ''
+	# r=response.json()['message']['body']['lyrics']['lyrics_body']
+	lyrics  = az.get_lyrics()
+	lyrics = str(lyrics).replace('\\n', ' ')
+	lyrics = re.sub(r'[^\w]', ' ', lyrics)
+	return lyrics
 
 class Movie(db.Model):
 	id = db.Column(db.Integer, primary_key=True)

@@ -17,23 +17,25 @@ def index():
 
 @app.route("/callback")
 def movie():
+	try:
+		p ={'code': request.args['code'],
+			'grant_type': 'authorization_code',
+			'redirect_uri': 'http://muvie.pythonanywhere.com/callback',
+			'client_id': client_id,
+			'client_secret': client_secret,
+			'scope': 'user-read-private user-read-email user-read-recently-played'
+		}
+		r = requests.post('https://accounts.spotify.com/api/token', data=p, json=True)
 
-	p ={'code': request.args['code'],
-		'grant_type': 'authorization_code',
-		'redirect_uri': 'http://muvie.pythonanywhere.com/callback',
-		'client_id': client_id,
-		'client_secret': client_secret,
-		'scope': 'user-read-private user-read-email user-read-recently-played'
-	}
-	r = requests.post('https://accounts.spotify.com/api/token', data=p, json=True)
-
-	resp = r.json()
-	limit = 10
-	h ={'Authorization': 'Bearer ' + resp['access_token'],
-		'scope': 'user-read-private user-read-email user-read-recently-played'
-	}
-	r = requests.get('https://api.spotify.com/v1/me/player/recently-played?limit=' + str(limit), headers=h, json=True)
-	muvies = doMagic(r.json())
+		resp = r.json()
+		limit = 10
+		h ={'Authorization': 'Bearer ' + resp['access_token'],
+			'scope': 'user-read-private user-read-email user-read-recently-played'
+		}
+		r = requests.get('https://api.spotify.com/v1/me/player/recently-played?limit=' + str(limit), headers=h, json=True)
+		muvies = doMagic(r.json())
+	except Exception as e:
+		
 	return render_template('movie.html', movies=muvies)
 
 class spotify(Resource):
