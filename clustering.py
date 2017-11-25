@@ -9,6 +9,7 @@ import build
 import senticnet4
 
 array = ['id','genres', 'keywords','overview', 'release_date', 'runtime', 'tagline', 'title', 'vote_average']
+alphDict = {'admiration': 0, 'anger': 0, 'disgust': 0, 'fear': 0, 'interest': 0 , 'joy': 0, 'sadness': 0, 'surprise': 0}
 
 def getCount(tuple):
     return int(tuple[1])
