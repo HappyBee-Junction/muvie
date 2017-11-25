@@ -254,6 +254,7 @@
       popup.className = 'popup';
       btnClose.addEventListener('click', function(ev) {
         popup.className = 'popup hide';
+        videoBox.innerHTML = '';
       }, true);
       var movieTitle = document.getElementById('m_name');
       movieTitle.innerText = name;
