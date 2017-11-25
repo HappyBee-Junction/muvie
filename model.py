@@ -30,19 +30,14 @@ def magic(tracklist):
 	for s in tracklist:
 		lyrics = getLyrics(s['title'], s['artist'])
 		bigLyric = bigLyric + ' ' + lyrics
+	muvies = {}
+	moods = {}
 	if len(lyrics) > 0:
-		muvies = getMuvies(lyrics)
-
-		moods = {'angry': 0.2,
-				 'sad': 0.1,
-				 'happy': 0.5,
-				 'epic': 0.2,
-				 'mood5': 0.1
-				}
-		obj = {}
-		obj['movies'] = muvies
-		obj['songs'] = s
-		obj['moods'] = moods
+		muvies, moods = getMuvies(lyrics)
+	obj = {}
+	obj['movies'] = muvies
+	obj['songs'] = s
+	obj['moods'] = moods
 	return obj
 
 def getLyrics(trackname, artist):
@@ -76,7 +71,7 @@ def getMuvies(text):
 
 	muvieList = []
 
-	res = kmeans(text)
+	res, moods = kmeans(text)
 
 	for m in res:
 		movie = db.session.query(Movie).filter_by(id = m).first()
@@ -87,4 +82,4 @@ def getMuvies(text):
 
 		muvieList.append(response.json())
 
-	return muvieList
+	return muvieList, moods

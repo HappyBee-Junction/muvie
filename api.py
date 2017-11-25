@@ -20,6 +20,7 @@ def movie():
 	p ={'code': request.args['code'],
 		'grant_type': 'authorization_code',
 		'redirect_uri': 'http://muvie.pythonanywhere.com/callback',
+		# 'redirect_uri': 'http://localhost:8080/callback',		
 		'client_id': client_id,
 		'client_secret': client_secret,
 		'scope': 'user-read-private user-read-email user-read-recently-played'
@@ -46,6 +47,7 @@ class spotify(Resource):
 			'client_id': client_id,
 			'client_secret': client_secret,
 			'redirect_uri': 'http://muvie.pythonanywhere.com/callback',
+			# 'redirect_uri': 'http://localhost:8080/callback',		
 			'show_dialog': True,
 			'response_type': 'code',
 			'scope': 'user-read-private user-read-email user-read-recently-played'
