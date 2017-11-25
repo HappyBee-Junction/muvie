@@ -29,6 +29,7 @@ dic = build.builddictionary()
 ##---------End Train Model------------##
 
 def processLyrics(lyrics):
+    lyrics = lyrics.split(' ')
     sn = Senticnet()
     emotions = []
     for word in lyrics:
@@ -74,3 +75,10 @@ def kmeans(lyrics):
     for index in kmeans_indices:
         movie_ids.append(movie_indices[arr_movies[index]])
     return movie_ids
+
+def main():
+    s = 'I m living on an endless road Around the world for rock and roll Sometimes it feels so tough But I still ain t had enough I keep saying that it s getting too much But I know I m a liar Feeling all right in the noise and the light But that s what lights my fire  Hellraiser In the thunder and heat Hellraiser Rock you back in your seat Hellraiser And I ll make it come true Hellraiser I ll put a spell on you'
+    print(kmeans(s))
+
+if __name__ == "__main__":
+    main()
