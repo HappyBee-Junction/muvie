@@ -2,7 +2,7 @@ from api import app
 from model import db
 import kmeans
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///happyBee.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///muvies.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
