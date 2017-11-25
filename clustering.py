@@ -6,6 +6,7 @@ from scipy import stats
 import numpy as np
 import requests
 import build
+import senticnet4
 
 array = ['id','genres', 'keywords','overview', 'release_date', 'runtime', 'tagline', 'title', 'vote_average']
 
@@ -32,7 +33,7 @@ def processMovieData(dic):
         overview = re.findall(r"[\w']+", line[1])
         overview_emotions = []
         for o in overview:
-            if o not in STOPWORDS and o in dic:
+            if o not in STOPWORDS and o in senticnet4.senticnet:
                 emotion = sn.moodtags(o)
                 for emo in emotion:
                     overview_emotions.append(emo.replace("#",""))

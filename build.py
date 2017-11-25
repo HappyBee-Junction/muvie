@@ -7,5 +7,5 @@ def builddictionary():
     for line in data:
         for item in data[line]:
             if "#" in  item and item not in dic:
-                dic[item.replace("#","")] = None
-    return sorted(collections.OrderedDict(dic.items()))
+                dic[item.replace("#","")] = 0.0
+    return dic
