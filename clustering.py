@@ -12,17 +12,6 @@ import collections
 array = ['id','genres', 'keywords','overview', 'release_date', 'runtime', 'tagline', 'title', 'vote_average']
 alphDict = {'admiration': 0, 'anger': 0, 'disgust': 0, 'fear': 0, 'interest': 0 , 'joy': 0, 'sadness': 0, 'surprise': 0}
 
-#def getCount(tuple):
-#    return int(tuple[1])
-
-def normalized(arr):
-    sum = 0.0
-    for item in arr:
-        sum += item
-    for item in arr:
-        item = item/sum
-    return arr
-
 def processMovieData(dic):
     with open('./stopwords.txt') as json_data:
         STOPWORDS = json.load(json_data)
@@ -48,8 +37,6 @@ def processMovieData(dic):
                     emotion = sn.moodtags(word)
                     for emo in emotion:
                         keywords_emotions.append(emo.replace("#",""))
-        #dic_copy = dic.copy()
-        #sortedList = sorted(stats.itemfreq(overview_emotions + keywords_emotions), key=getCount)
 
         #Retrieve ordered dictionnary of emotions with their frequencies: dic 
         emoList = stats.itemfreq(overview_emotions + keywords_emotions)
@@ -76,7 +63,7 @@ lyrics = "There's a lady who's sure All that glitters is gold And she's buying a
 def processLyrics():
     dic = build.builddictionary()
     model = processMovieData(dic)
-    lyrics = requests.get("http://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id=15953433&apikey=a861047a0eb1272708e4d518bee92a6d")
+    #lyrics = requests.get("http://api.musixmatch.com/ws/1.1/track.lyrics.get?track_id=15953433&apikey=a861047a0eb1272708e4d518bee92a6d")
     lyrics_ = re.findall(r"[\w']+", lyrics.replace("'"," ")) 
     with open('./stopwords.txt') as json_data:
         STOPWORDS = json.load(json_data)
@@ -87,8 +74,23 @@ def processLyrics():
             emotion = sn.moodtags(word)
             for emo in emotion:
                 emotions.append(emo.replace("#",""))
-    sortedList = sorted(stats.itemfreq(emotions), key=getCount)
-    final_emotions = normalized(sortedList[::-1][:5]) #append keywords
+
+    #sortedList = sorted(stats.itemfreq(emotions), key=getCount)
+    emoLycList = stats.itemfreq(emotions)
+    emoLycDict = alphDict.copy()
+
+    for elt in emoLycList:
+        emoLycDict[elt[0]] = elt[1]
+    dicLyc = collections.OrderedDict(sorted(emoLycDict.items()))
+
+    #Compute list of frequencies out of dictionnary
+    orderedEmoLycList = []
+    for key in dicLyc.keys():
+        orderedEmoLycList.append(int(dicLyc[key]))
+    if np.linalg.norm(orderedEmoLycList) != 0.0:
+        final_emotions = orderedEmoLycList / np.linalg.norm(orderedEmoLycList)
+
+    #normalized(sortedList[::-1][:5]) #append keywords
     print(final_emotions)
 
 if __name__=="__main__":
