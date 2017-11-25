@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>index</title>
+</head>
+<body>
+	<p>Hello World!</p>
+	<script type="text/javascript">
+
+		req = new XMLHttpRequest();
+		req.addEventListener("readystatechange", processRequest, false);
+		req.open('GET', '/spotify');
+		req.setRequestHeader('Access-Control-Allow-Origin', '*');
+		req.send();
+
+		function processRequest(e) {
+			if(this.readyState == 4 && this.status == 302){
+			console.log(this.responseText);
+			}
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>movie</title>
+</head>
+<body>
+	{{ movies | length }}
+	{% for movie in movies %}
+	<p>{{ movie.Title }}</p>
+	{% endfor %}
+</body>
+</html>
