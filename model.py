@@ -53,10 +53,12 @@ def getLyrics(trackname, artist):
 	response = requests.get('http://api.musixmatch.com/ws/1.1/matcher.lyrics.get', params=values)
 	if response.json()['message']['header']['status_code'] is not 200:
 		return ''
-	r=response.json()['message']['body']['lyrics']['lyrics_body']
+	r = response.json()['message']['body']['lyrics']['lyrics_body']
 	# lyrics  = az.get_lyrics()
 	# lyrics = str(lyrics).replace('\\n', ' ')
 	# lyrics = re.sub(r'[^\w]', ' ', lyrics)
+	regex= re.compile('[^a-zA-Z]')
+	r = regex.sub(' ', r[0:len(r)-74])
 	return r
 
 class Movie(db.Model):
