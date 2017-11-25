@@ -123,7 +123,12 @@ def kmeans(lyrics):
     movie_ids = []
     for index in kmeans_indices:
         movie_ids.append(movie_indices[arr_movies[index]])
-    return movie_ids
+    values = ['admiration', 'anger', 'disgust', 'fear', 'interest' , 'joy', 'sadness', 'surprise']
+    dic = [[] for i in range(8)]
+    for index,emotions in enumerate(lyrics_emotions):
+        dic[index].append(values[index])
+        dic[index].append(emotions)
+    return movie_ids, dic
 
 def main():
     s = "Rockets, moon shots Spend it on the have nots Money, we make it Fore we see it you take it Oh, make you wanna holler The way they do my life Make me wanna holler The way they do my life This ain't livin' This ain't livin' No, no baby, this ain't livin' No, no, no Inflation no chance To increase finance Bills pile up sky high Send that boy off to die Make me wanna holler The way they do my life Make me wanna holler The way they do my life Hang ups, let downs Bad breaks, set backs Natural fact is I can't pay my taxes Oh, make me wanna holler And throw up both my hands Yea, it makes me wanna holler And throw up both my hands Crime is increasing Trigger happy policing Panic is spreading God knows where We're heading Oh, make me wanna holler They don't understand Make me wanna holler They don't understand"
