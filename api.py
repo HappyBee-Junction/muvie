@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, abort
 from flask_restful import Api, reqparse, Resource
 from resources import movies
 import requests
@@ -28,12 +28,15 @@ def movie():
 
 	resp = r.json()
 	limit = 10
-	h ={'Authorization': 'Bearer ' + resp['access_token'],
-		'scope': 'user-read-private user-read-email user-read-recently-played'
-	}
+	try:
+		h ={'Authorization': 'Bearer ' + resp['access_token'],
+			'scope': 'user-read-private user-read-email user-read-recently-played'
+		}
+	except Exception as e:
+		abort(500, "Some message")
 	r = requests.get('https://api.spotify.com/v1/me/player/recently-played?limit=' + str(limit), headers=h, json=True)
-	muvies = doMagic(r.json())
-	return render_template('movie.html', movies=muvies)
+	obj = doMagic(r.json())
+	return render_template('movie.html', movies=obj['movies'], songs=obj['songs'], moods=obj['moods'])
 
 class spotify(Resource):
 	def get(self):
@@ -51,6 +54,11 @@ class spotify(Resource):
 		print(r)
 		r.headers['Access-Control-Allow-Origin'] = '*'
 		return redirect(r.url, code=302)
+
+
+@app.errorhandler(500)
+def page_not_found(e):
+    return render_template('error.html'), 500
 
 
 api.add_resource(spotify, '/spotify', endpoint='spotify')

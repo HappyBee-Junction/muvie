@@ -26,13 +26,24 @@ def doMagic(js):
 
 def magic(tracklist):
 	bigLyric = ''
+	songs = []
 	for s in tracklist:
 		lyrics = getLyrics(s['title'], s['artist'])
 		bigLyric = bigLyric + ' ' + lyrics
-
 	if len(lyrics) > 0:
 		muvies = getMuvies(lyrics)
-	return muvies
+
+		moods = {'angry': 0.2,
+				 'sad': 0.1,
+				 'happy': 0.5,
+				 'epic': 0.2,
+				 'mood5': 0.1
+				}
+		obj = {}
+		obj['movies'] = muvies
+		obj['songs'] = s
+		obj['moods'] = moods
+	return obj
 
 def getLyrics(trackname, artist):
 	# az = azlyrics.Azlyrics(artist, trackname)
@@ -61,14 +72,17 @@ class Movie(db.Model):
 
 def getMuvies(text):
 
-	muvieList = set()
+	muvieList = []
 
 	res = kmeans(text)
 
 	for m in res:
 		movie = db.session.query(Movie).filter_by(id = m).first()
 
-		muvieList.add(movie.title)
+
+		values={'t':movie.title, 'apikey':'33020a1'}
+		response = requests.get('http://www.omdbapi.com/', params=values)
+
+		muvieList.append(response.json())
 
 	return muvieList
-
