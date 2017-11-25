@@ -43,7 +43,7 @@ def processMovieData(dic):
         for obj in jsonobj:
             keyword = re.findall(r"[\w']+", obj['name'].replace("'"," ")) 
             for word in keyword:
-                if word not in STOPWORDS and word in dic:
+                if word not in STOPWORDS and word in senticnet4.senticnet:
                     emotion = sn.moodtags(word)
                     for emo in emotion:
                         keywords_emotions.append(emo.replace("#",""))
