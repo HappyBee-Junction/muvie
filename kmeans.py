@@ -8,6 +8,7 @@ from senticnet.senticnet import Senticnet
 
 alphDict = {'admiration': 0, 'anger': 0, 'disgust': 0, 'fear': 0, 'interest': 0 , 'joy': 0, 'sadness': 0, 'surprise': 0}
 
+##---------Train Model------------##
 #Read txt File containing the dataset
 with open('./movie_raw.txt') as json_data:
     txt = json.load(json_data)
@@ -17,16 +18,17 @@ with open('./stopwords.txt') as json_data:
     STOPWORDS = json.load(json_data)
 
 #Fit the model on the data
-kmeans = KMeans(n_clusters=50, random_state=0).fit(txt)
+model = KMeans(n_clusters=50, random_state=0).fit(txt)
 #Assign each movie to a cluster
-indices = kmeans.predict(txt)  # ----pythonic indices
+indices = model.predict(txt)  # ----pythonic indices
 #Transpose by assigning each cluster its asscociated movies
-res = [[] for i in range(50)]
+clusters = [[] for i in range(50)]
 for index, cluster in enumerate(indices):
-    res[cluster].append(index)
+    clusters[cluster].append(index)
+dic = build.builddictionary()
+##---------End Train Model------------##
 
 def processLyrics(lyrics):
-    dic = build.builddictionary()
     sn = Senticnet()
     emotions = []
     for word in lyrics:
@@ -51,15 +53,16 @@ def processLyrics(lyrics):
     #normalized(sortedList[::-1][:5]) #append keywords
     return final_emotions
 
-def predict(model, lyrics):
+def predict(lyrics):
     #Give a new lyrics, predict the cluster it belongs to
     center = model.predict(lyrics)
     return center
 
+##-------Call this function to classify songs-----##
 def kmeans(lyrics):
     lyrics_emotions = processLyrics(lyrics)
     lyrics = np.array(lyrics_emotions).reshape(1, -1)
-    predicted_label = predict(model, lyrics)
+    predicted_label = predict(lyrics)
     #Find the indices of the movies in that cluster
     arr_movies = clusters[predicted_label[0]]
     #Computer L2 Norm and find the 5 smallest norm values
