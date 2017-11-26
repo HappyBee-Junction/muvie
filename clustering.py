@@ -1,6 +1,5 @@
 import pandas as pd
 import json
-from senticnet.senticnet import Senticnet
 import re
 from scipy import stats
 import numpy as np
@@ -10,6 +9,14 @@ import collections
 
 array = ['id','genres', 'keywords','overview', 'release_date', 'runtime', 'tagline', 'title', 'vote_average']
 alphDict = {'admiration': 0, 'anger': 0, 'disgust': 0, 'fear': 0, 'interest': 0 , 'joy': 0, 'sadness': 0, 'surprise': 0}
+
+def findemotion(word):
+    sn = senticnet4.senticnet
+    emotions = []
+    for s in sn[word]:
+        if '#' in s:
+            emotions.append(s)
+    return emotions
 
 def processMovieData(dic):
     with open('./stopwords.txt') as json_data:
@@ -24,7 +31,7 @@ def processMovieData(dic):
         overview_emotions = []
         for o in overview:
             if o not in STOPWORDS and o in senticnet4.senticnet:
-                emotion = sn.moodtags(o)
+                emotion = sn.findemotion(o)
                 for emo in emotion:
                     overview_emotions.append(emo.replace("#",""))
         jsonobj = json.loads(line[0])
@@ -33,7 +40,7 @@ def processMovieData(dic):
             keyword = re.findall(r"[\w']+", obj['name'].replace("'"," ")) 
             for word in keyword:
                 if word not in STOPWORDS and word in senticnet4.senticnet:
-                    emotion = sn.moodtags(word)
+                    emotion = sn.findemotion(word)
                     for emo in emotion:
                         keywords_emotions.append(emo.replace("#",""))
 
