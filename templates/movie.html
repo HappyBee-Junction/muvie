@@ -8,13 +8,14 @@
   <title>Muvie</title>
   <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/bricklayer/0.4.2/bricklayer.min.css">
   <script src="http://cdnjs.cloudflare.com/ajax/libs/bricklayer/0.4.2/bricklayer.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css?family=Comfortaa:700|Open+Sans');
+@import url('https://fonts.googleapis.com/css?family=Comfortaa:700|Open+Sans');
 
     @media screen and (min-width: 1200px) {
       .bricklayer-column-sizer {
         /* divide by 4. */
-        width: 25%;
+        width: 20%;
       }
     }
 
@@ -23,13 +24,76 @@
         /* divide by 3. */
         width: 20%;
       }
+      .header img {
+        width: 30%;
+      }
+      .song-list,
+      .graph-container {
+        margin: 2rem 0;
+        float: left;
+      }
+
+      .song-list,
+      .graph-container {
+        width: 50%;
+      }
+
+      .song-list ul {
+        padding:0 5rem;
+      }
+      .graph {
+        width: 80%;
+        margin: 0 auto;
+      }
+
+      .title {
+        font-size: 1.3em;
+        padding-left: 2rem;
+        margin-top: 0px;
+      }
     }
 
-    @media screen and (min-width: 320px and max-width:768px;
-    ) {
+    @media screen and (min-width: 320px) and (max-width: 767px) {
       .bricklayer-column-sizer {
         /* divide by 1. */
         width: 100%;
+      }
+      .header img {
+        width: 50%;
+      }
+      .video-box {
+        position:relative;
+        padding-bottom:56.25%;
+        padding-top:30px;
+        height:0;
+        overflow:hidden;
+      }
+      .video-box iframe,
+      .video-box object,
+      .video-box embed {
+        position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+      }
+
+
+      .song-list,
+      .graph {
+        width: 100%;
+        float: none;
+      }
+
+      .song-list {
+        margin-bottom: 2rem;
+      }
+
+      .song-list ul {
+        padding:0;
+      }
+      .title {
+        font-size: 1.5rem;
       }
     }
 
@@ -38,7 +102,6 @@
       margin: 0;
       padding: 0;
       font-size: 16px;
-      /*background-color: #81CBFB;*/
       font-family: 'Open Sans', sans-serif;
     }
 
@@ -46,12 +109,36 @@
       margin: 0 4rem;
     }
 
+    .header {
+      padding-bottom: 2px;
+      padding-left: 2rem;
+    }
+
+    .title {
+      margin-top: 2.5rem;
+      text-align: center;
+    }
+
+
+    .brand {
+      /*margin-top: 5rem;*/
+      padding-top: 2.5rem;
+      /*padding-left: 2rem;*/
+      text-align: center;
+      font-size: 3rem;
+      /*color: #000;*/
+      font-family: 'Comfortaa', cursive;
+      color: #FF2E00;
+    }
+
     .card {
       width: 100%;
+      position: relative;
       background-color: rgba(190, 190, 190, 0.3);
       margin-bottom: 1rem;
       border-radius: 10px;
       overflow: hidden;
+      cursor: pointer;
     }
 
     .img {
@@ -59,19 +146,9 @@
       height: auto;
     }
 
-    .brand {
-      margin-top: 5rem;
-      font-size: 3rem;
-      color: #000;
-      font-family: 'Comfortaa', cursive;
-    }
-
-    .title {
-      font-size: 2em;
-    }
 
     .content {
-      margin-top: 4rem;
+      margin-top: 3rem;
     }
 
 
@@ -83,13 +160,24 @@
       padding: 1rem;
       text-align: center;
     }
+    /*.img-container {
+      height: 20rem;
+      overflow: hidden;
+    }*/
+
+    .img {
+      width: 100%;
+      height: 20rem;
+    }
+
     .popup {
       position: fixed;
       top: 0;
       bottom: 0;
       left: 0;
       right: 0;
-      background-color: rgba(50, 186, 93, 0.8);
+      /*background-color: rgba(50, 186, 93, 0.8);*/
+      background-color: rgba(255, 255, 0, 0.8);
       z-index: 10;
     }
 
@@ -104,105 +192,250 @@
       font-size: 0;
       top: 2rem;
       right: 2rem;
-      background: url({{ url_for('static',filename='img/close.png') }}) center center/100% auto no-repeat;
+      background: url({{ url_for('static',filename='img/close.png')}}) center center/100% auto no-repeat;
       z-index: 99;
-    }
-   .popup .container{
-     margin:0;
-     width: 100%;
-     text-align: center;
-     position: absolute;
-     top: 50%;
-     transform: translateY(-50%);
-   }
-    .video-box {
-      /*width: 100%;
-      text-align: center;
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);*/
-    }
-    .popup .title{
-      margin-top: -2rem;
-      font-size: 2rem;
-      line-height: 2rem;
-      text-align: center;
-      width: 100%;
-      /*width: 100%;
-      text-align: center;
-      font-size: 2rem;
-      position: absolute;
-      top: ;*/
-    }
-    .notice{
-      position: absolute;
-      width: 100%;
-      color: #fff;
-      font-size: 20px;
-      text-align: center;
-      top: 50%;
-      transform: translateY(-50%);
-    }
+      cursor:pointer;
+}
+
+.popup .container {
+  margin: 0;
+  width: 100%;
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.popup .title {
+  margin-top: -2rem;
+  /*font-size: 2rem;*/
+  line-height: 2rem;
+  text-align: center;
+  width: 100%;
+}
+
+.happybee{
+  content: '.';
+  display: inline-block;
+  font-size: 0;
+  width: 3rem;
+  height: 3rem;
+  margin-right: .5rem;
+  background:  url({{ url_for('static',filename='img/happyb.png')}}) no-repeat center center/100% auto;
+}
+
+
+
+
+.notice {
+  position: absolute;
+  width: 100%;
+  color: #fff;
+  font-size: 20px;
+  text-align: center;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.clearfix::after {
+  display: block;
+  content: '.';
+  font-size: 0;
+  visibility: hidden;
+  clear: both;
+}
+
+.song-list ul {
+
+  margin: 3rem 0;
+  list-style: none;
+  font-weight: 700;
+}
+
+.song-list li {
+  margin-top: 0.5rem;
+}
+
+.song-list li:first-child {
+  margin-top: 0;
+}
+
+.song-list p {
+  margin:0;
+  font-weight: bold;
+}
+.song-list .artist {
+  font-weight: 700;
+  color: #FF2E00;
+}
+
+.song-list .title,
+.graph-container .title {
+  color: #ff9100;
+  margin: 0;
+  font-size: 2rem;
+}
+
+
+
+.overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  /*opacity: 0;*/
+  transition: .5s ease;
+  background-color: rgba(255,46,0,0);
+  border-radius: 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.card:hover .overlay {
+  /*opacity: .4;*/
+  background-color: rgba(255,46,0,.8);
+}
+
+.card .overlay p {
+  opacity:0;
+}
+
+.card:hover .overlay p {
+  opacity:1;
+  color: white;
+  font-size: 1.2rem;
+  position: absolute;
+  top: 35%;
+  text-align: center;
+  width: 100%;
+  transform: translateY(-50%);
+}
+
+.arrow {
+  display: inline-block;
+  width: 2rem;
+  height: 1.5rem;
+  background: url({{ url_for('static',filename='img/arrow.png')}}) no-repeat center/100% auto;
+
+}
+
+.arrow-container {
+  margin-top: 2rem;
+  text-align: center;
+}
   </style>
 </head>
 
 <body>
   <div class="container">
     <div class="header">
-      <div class="brand">Muvie</div>
+      <!-- <div class="brand">Muvie</div> -->
+      <div class="brand"><img src="{{ url_for('static',filename='img/Muvie.png') }}" alt=""></div>
+
     </div>
     <div>
       <h1 class="title">These are the movies recommended for you based on your recent playlist:</h1>
     </div>
+
     <div class="content" id="mvlist">
       <div class="bricklayer">
         {% for movie in movies %}
         <div>
           <div class="card" data-name="{{movie.Title}}">
-          	<div class="img-box">
             <img class="img" src="{{ movie.Poster }}" alt="{{ movie.Title }}">
+            <div class="overlay">
+              <p>WATCH THE TRAILER</p>
             </div>
             <p class="title">{{ movie.Title }}</p>
           </div>
         </div>
         {% endfor %}
-        <!-- <div>
-          <div class="card" data-name="interstellar">
-            <img class="img" src="img/interstellar.jpg" alt="Interstellar">
-            <p class="title">Interstellar</p>
-          </div>
-        </div>
-        <div>
-          <div class="card" data-name="Amelie">
-            <img class="img" src="img/amelie.jpg" alt="Amelie">
-            <p class="title">Amelie</p>
-          </div>
-        </div>
-        <div>
-          <div class="card" data-name="Moonlight">
-            <img class="img" src="img/moonlight.jpg" alt="Moonlight">
-            <p class="title">Moonlight</p>
-          </div>
-        </div>
-        <div>
-          <div class="card" data-name="Amelie">
-            <img class="img" src="img/amelie.jpg" alt="Amelie">
-            <p class="title">Amelie</p>
-          </div>
-        </div>
-        <div>
-          <div class="card" data-name="moonlight">
-            <img class="img" src="img/moonlight.jpg" alt="Moonlight">
-            <p class="title">Moonlight</p>
-          </div>
-        </div>
-        <div>
-          <div class="card" data-name="interstellar">
-            <img class="img" src="img/interstellar.jpg" alt="Interstellar">
-            <p class="title">A super loooooong long long long movie name</p>
-          </div>
-        </div> -->
+      </div>
+      <div class="arrow-container">
+        <span class="arrow"></span>
+      </div>
+      <div class="data clearfix">
+        <div class="song-list">
+          <h2 class="title">List of recent played songs:</h2>
+          <ul>
+            {% for song in songs %}
+            <li>
+              <p>{{song.title}}</p>
+              <p class="artist">{{song.artist}}</p>
+            </li>
+            {% endfor %}
 
+          </ul>
+        </div>
+        <div class="graph-container">
+          <h2 class="title">Resulting mood chart:</h2>
+          <div class="graph">
+            <!-- Radar Graph -->
+            <canvas id="myChart" width="100px" height="100px"></canvas>
+            <script>
+              var ctx = document.getElementById("myChart");
+
+              var moods = {
+                'fear': {{moods.fear}},
+                'joy': {{moods.joy}},
+                'interest': {{moods.interest}},
+                'disgust': {{moods.disgust}},
+                'admiration': {{moods.admiration}},
+                'surprise': {{moods.surprise}},
+                'anger': {{moods.anger}},
+                'sadness': {{ moods.sadness}},
+              };
+              var options = {
+                responsive: true,
+                legend: {
+                  label: {
+                    defaultFontSize: 20
+                  },
+                  display: false
+                },
+                scale: {
+                  ticks: {
+                    stepSize: .2,
+                    fontSize: 16,
+                  },
+                  pointLabels: {
+                    fontSize: 20
+                  },
+                },
+              };
+              var labels = [],
+                dataset = [];
+
+              for (var m in moods) {
+                labels.push(m);
+                // var temp = {};
+                // temp.data = moods[m];
+                dataset.push(moods[m]);
+              }
+
+              console.log(dataset);
+              var myRadarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                  labels: labels,
+                  datasets: [{
+                    data: dataset,
+                    backgroundColor: 'rgba(255, 131, 0, 0.7)',
+                    borderColor: 'rgba(255, 131, 0, 1)'
+                  }, {
+                    data: [0, 0, 0, 0, 0],
+                    radius: 0,
+                    backgroundColor: 'rgba(54, 162, 235, 0)',
+                  }]
+                },
+                options: options,
+              });
+            </script>
+          </div>
+        </div>
       </div>
 
       <div class="popup hide" id="popup">
@@ -211,7 +444,7 @@
         </div>
         <div class="container">
           <div class="title">
-            <h1 id='m_name'>Movie Name</h1>
+            <h1 id="m_name">Movie Name</h1>
           </div>
           <div class="video-box" id="video_box">
             <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/zSWdZVtXT7E" frameborder="0" allowfullscreen></iframe> -->
@@ -257,8 +490,7 @@
         videoBox.innerHTML = '';
       }, true);
       var movieTitle = document.getElementById('m_name');
-      movieTitle.innerText = name;
-
+      movieTitle.innerHTML = '<span class="happybee"></span>' + name;
       // call youtube search API, get videoId
       p = {
         'maxResults': '1',
@@ -275,10 +507,10 @@
       var url = api + '?';
       const API_KEY = 'AIzaSyBmKZX_MnWGKUr3f67KVqRgytVyUgaRJZU';
       var vid = '',
-          src = '',
-          html = '';
-      if(parameter){
-        for(var p in parameter){
+        src = '',
+        html = '';
+      if (parameter) {
+        for (var p in parameter) {
           url += p + '=' + parameter[p] + '&';
         }
 
@@ -292,13 +524,13 @@
         if (xmlHttp.readyState === XMLHttpRequest.DONE && xmlHttp.status === 200) {
           var res = JSON.parse(xmlHttp.responseText);
 
-          if(res && res['items'].length != 0){
+          if (res && res['items'].length != 0) {
             vid = res.items[0].id.videoId;
           }
 
-          if(vid == ''){
+          if (vid == '') {
             html = '<p class="notice">Oops, trailer not available now :(</p>'
-          }else{
+          } else {
             src = 'https://www.youtube.com/embed/' + vid;
             html = '<iframe width="800" height="450" src="' + src + '" frameborder="0" allowfullscreen></iframe>';
           }

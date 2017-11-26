@@ -36,7 +36,7 @@ def magic(tracklist):
 		muvies, moods = getMuvies(lyrics)
 	obj = {}
 	obj['movies'] = muvies
-	obj['songs'] = s
+	obj['songs'] = tracklist
 	obj['moods'] = moods
 	return obj
 
@@ -64,7 +64,7 @@ class Movie(db.Model):
 		self.title = title
 
 	def toJSON(self):
-		return ({'title': self.title, 
+		return ({'title': self.title,
 				})
 
 def getMuvies(text):
