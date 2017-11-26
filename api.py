@@ -36,7 +36,7 @@ def movie():
 	except Exception as e:
 		abort(500, "Some message")
 	r = requests.get('https://api.spotify.com/v1/me/player/recently-played?limit=' + str(limit), headers=h, json=True)
-	obj = doMagic(r.json())
+	obj = doMagic(r.json(), resp['access_token'])
 	return render_template('movie.html', movies=obj['movies'], songs=obj['songs'], moods=obj['moods'])
 
 class spotify(Resource):

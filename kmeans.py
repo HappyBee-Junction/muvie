@@ -4,6 +4,7 @@ from scipy import stats
 import numpy as np
 import json, requests, collections
 import build, senticnet4
+import math as m
 # import matplotlib.pyplot as plt
 # from sklearn.decomposition import PCA
 
@@ -18,7 +19,7 @@ with open('./movie_indices.txt') as json_data:
 with open('./stopwords.txt') as json_data:
     STOPWORDS = json.load(json_data)
 
-num_cluster = 50
+num_cluster = 100
 #Fit the model on the data
 model = KMeans(n_clusters=num_cluster, random_state=0).fit(txt)
 #Assign each movie to a cluster
@@ -78,28 +79,65 @@ def findemotion(word):
             emotions.append(s)
     return emotions
 
-def processLyrics(lyrics):
-    lyrics = lyrics.split(' ')
-    emotions = []
-    for word in lyrics:
-        if word not in STOPWORDS and word in senticnet4.senticnet:
-            emotion = findemotion(word)
-            for emo in emotion:
-                emotions.append(emo.replace("#", ""))
-    #sortedList = sorted(stats.itemfreq(emotions), key=getCount)
-    emoLycList = stats.itemfreq(emotions)
-    emoLycDict = alphDict.copy()
+def processLyrics(data):
+    final_emotions = [0.0] * 8
+    for item in data:
+        if item[0] == '':
+            continue
+        lyrics_string = item[0]
+        features = item[1]
+        lyrics = lyrics_string.split(' ')
+        emotions = []
+        for word in lyrics:
+            if word not in STOPWORDS and word in senticnet4.senticnet:
+                emotion = findemotion(word)
+                for emo in emotion:
+                    emotions.append(emo.replace("#", ""))
+        #sortedList = sorted(stats.itemfreq(emotions), key=getCount)
+        emoLycList = stats.itemfreq(emotions)
+        emoLycDict = alphDict.copy()
 
-    for elt in emoLycList:
-        emoLycDict[elt[0]] = elt[1]
-    dicLyc = collections.OrderedDict(sorted(emoLycDict.items()))
+        for elt in emoLycList:
+            emoLycDict[elt[0]] = elt[1]
+        dicLyc = collections.OrderedDict(sorted(emoLycDict.items()))
 
-    #Compute list of frequencies out of dictionnary
-    orderedEmoLycList = []
-    for key in dicLyc.keys():
-        orderedEmoLycList.append(int(dicLyc[key]))
-    if np.linalg.norm(orderedEmoLycList) != 0.0:
-        final_emotions = orderedEmoLycList / np.linalg.norm(orderedEmoLycList)
+        #Compute list of frequencies out of dictionnary
+        orderedEmoLycList = []
+        for key in dicLyc.keys():
+            orderedEmoLycList.append(int(dicLyc[key]))
+        dance_direct = features['danceability'] * 2
+        dance_inv = (1.0 - features['danceability']) * 2
+        
+        energy_direct = features['energy'] * 2
+        energy_inv = (1.0 - features['energy']) * 2
+
+        tempo_direct = features['tempo']/100.0
+        tempo_inv = 100.0/features['tempo']
+        
+        loudness_direct = (features['loudness'] + 60.0) / 35.0
+        loudness_inv = m.fabs(10 - features['loudness']) / 35.0        
+
+        orderedEmoLycList[1] = orderedEmoLycList[1] * dance_inv
+        orderedEmoLycList[1] = orderedEmoLycList[1] * energy_direct
+        orderedEmoLycList[1] = orderedEmoLycList[1] * loudness_direct
+
+        orderedEmoLycList[5] = orderedEmoLycList[5] * dance_direct
+        orderedEmoLycList[5] = orderedEmoLycList[5] * tempo_direct
+        
+        orderedEmoLycList[6] = orderedEmoLycList[6] * dance_inv
+        orderedEmoLycList[6] = orderedEmoLycList[6] * energy_inv
+        orderedEmoLycList[6] = orderedEmoLycList[6] * tempo_inv
+        orderedEmoLycList[6] = orderedEmoLycList[6] * loudness_inv                
+        
+        final_emotions = np.array(final_emotions) + np.array(orderedEmoLycList)
+
+    final_emotions[0] = final_emotions[0] * 0.7
+    final_emotions[2] = final_emotions[2] * 0.7
+    final_emotions[4] = final_emotions[4] * 0.7
+    final_emotions[7] = final_emotions[7] * 0.7
+
+    if np.linalg.norm(final_emotions) != 0.0:
+        final_emotions = final_emotions / np.linalg.norm(final_emotions)
     #normalized(sortedList[::-1][:5]) #append keywords
     return final_emotions
 
@@ -110,7 +148,13 @@ def predict(lyrics):
 
 ##-------Call this function to classify songs-----##
 def kmeans(lyrics):
+    # with open('./songs_data.txt', 'w') as outfile:
+    #     json.dump(lyrics, outfile)
+    # with open('./songs_data.txt') as json_data:
+    #     txt = json.load(json_data)
     lyrics_emotions = processLyrics(lyrics)
+    # lyrics_emotions = processLyrics(txt)
+    
     lyrics = np.array(lyrics_emotions).reshape(1, -1)
     predicted_label = predict(lyrics)
     #Find the indices of the movies in that cluster
@@ -131,7 +175,7 @@ def kmeans(lyrics):
     return movie_ids, dict(dic)
 
 def main():
-    s = "Rockets, moon shots Spend it on the have nots Money, we make it Fore we see it you take it Oh, make you wanna holler The way they do my life Make me wanna holler The way they do my life This ain't livin' This ain't livin' No, no baby, this ain't livin' No, no, no Inflation no chance To increase finance Bills pile up sky high Send that boy off to die Make me wanna holler The way they do my life Make me wanna holler The way they do my life Hang ups, let downs Bad breaks, set backs Natural fact is I can't pay my taxes Oh, make me wanna holler And throw up both my hands Yea, it makes me wanna holler And throw up both my hands Crime is increasing Trigger happy policing Panic is spreading God knows where We're heading Oh, make me wanna holler They don't understand Make me wanna holler They don't understand"
+    s = "I'm living on an endless road Around the world for rock and roll Sometimes it feels so tough But I still ain't had enough I keep saying that it's getting too much But I know I'm a liar Feeling all right in the noise and the light But that's what lights my fire Hellraiser, in the thunder and heat Hellraiser, rock you back in your seat Hellraiser, and I'll make it come true Hellraiser, I'll put a spell on you Walking out on another stage Another town, another place Sometimes I don't feel right Nerves wound up too damn tight Don't you tell me it's bad for my health But kicking back don't make it Out of control, I play the ultimate role Don't know how to make it Hellraiser, in the thunder and heat Hellraiser, rock you back in your seat Hellraiser, and I'll make it come true Hellraiser, I'll put a spell on you I'm living on an endless road Around the world for rock and roll Sometimes it feels so tough But I still ain't had enough I keep saying that it's getting too much But I know I'm a liar Feeling all right in the noise and the light But that's what lights my fire Hellraiser, in the thunder and heat Hellraiser, rock you back in your seat Hellraiser, and I'll make it come true Hellraiser, I'll put a spell on you"
     print(kmeans(s))
 
 if __name__ == "__main__":
