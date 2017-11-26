@@ -45,7 +45,7 @@ def magic(tracklist, token):
 	return obj
 
 def getLyrics(trackname, artist):
-	values={'q_track': trackname,'q_artist':artist, 'apikey':'a861047a0eb1272708e4d518bee92a6d'}
+	values={'q_track': trackname,'q_artist':artist, 'apikey':'851a954af52f9f0406ddd7f747bb0c68'}
 	response = requests.get('http://api.musixmatch.com/ws/1.1/matcher.lyrics.get', params=values)
 	if response.json()['message']['header']['status_code'] is not 200:
 		return ''
