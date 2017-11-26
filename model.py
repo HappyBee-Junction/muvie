@@ -62,7 +62,7 @@ class Movie(db.Model):
 		self.title = title
 
 	def toJSON(self):
-		return ({'title': self.title, 
+		return ({'title': self.title,
 				})
 
 def getMuvies(text):

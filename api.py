@@ -11,16 +11,11 @@ api = Api(app)
 client_id = '6c6b5e99bc36413682d8a803febe776f'
 client_secret = '1538b0509aba4c20ab55bf758d5e9e65'
 
-@app.route("/")
-def index():
-	return render_template('index.html')
-
 @app.route("/callback")
 def movie():
 	p ={'code': request.args['code'],
 		'grant_type': 'authorization_code',
-		'redirect_uri': 'http://muvie.pythonanywhere.com/callback',
-		# 'redirect_uri': 'http://localhost:8080/callback',		
+		'redirect_uri': 'http://localhost:8080/callback',
 		'client_id': client_id,
 		'client_secret': client_secret,
 		'scope': 'user-read-private user-read-email user-read-recently-played'
@@ -46,8 +41,7 @@ class spotify(Resource):
 		p = {
 			'client_id': client_id,
 			'client_secret': client_secret,
-			'redirect_uri': 'http://muvie.pythonanywhere.com/callback',
-			# 'redirect_uri': 'http://localhost:8080/callback',		
+			'redirect_uri': 'http://localhost:8080/callback',
 			'show_dialog': True,
 			'response_type': 'code',
 			'scope': 'user-read-private user-read-email user-read-recently-played'
@@ -63,7 +57,7 @@ def page_not_found(e):
     return render_template('error.html'), 500
 
 
-api.add_resource(spotify, '/spotify', endpoint='spotify')
+api.add_resource(spotify, '/', endpoint='spotify')
 
 if __name__ == '__main__':
 	app.run(debug=True)
